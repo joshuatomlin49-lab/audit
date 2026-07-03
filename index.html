@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>PEMISCOT Hospital Audit System</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <section class="app">
+      <aside class="sidebar">
+        <div class="sidebar-brand">
+          <div class="brand-mark" aria-hidden="true">
+            <svg viewBox="0 0 64 64">
+              <rect x="8" y="8" width="48" height="48" rx="10"></rect>
+              <path d="M32 17v30M17 32h30"></path>
+            </svg>
+          </div>
+          <div>
+            <strong>PEMISCOT</strong>
+            <span>Audit System</span>
+          </div>
+        </div>
+
+        <nav class="nav" aria-label="Audit sections">
+          <button class="nav-item active" data-tab="dashboard" type="button">Command Center</button>
+          <button class="nav-item" data-tab="handHygiene" type="button">Hand Hygiene Audit</button>
+          <button class="nav-item" data-tab="culture" type="button">Culture Follow-Up</button>
+          <button class="nav-item" data-tab="icRound" type="button">IC Rounds</button>
+          <button class="nav-item" data-tab="environmental" type="button">Environmental Rounds</button>
+          <button class="nav-item" data-tab="reports" type="button">Reports & Export</button>
+        </nav>
+      </aside>
+
+      <div class="workspace">
+        <header class="topbar">
+          <div>
+            <h1 id="pageTitle">Command Center</h1>
+            <p id="pageSubtitle">Daily infection prevention overview and priority follow-up.</p>
+          </div>
+          <button id="exportButton" class="export-link" type="button">Export CSV</button>
+        </header>
+
+        <main>
+          <section id="dashboard" class="content active">
+            <div class="notice">
+              GitHub-only mode: entries save on this device/browser. Export CSV before clearing browser data or switching devices.
+            </div>
+
+            <div class="metrics">
+              <article class="metric">
+                <span>HH Compliance</span>
+                <strong id="hhRate">0%</strong>
+                <small id="hhDetail">0 performed / 0 missed</small>
+              </article>
+              <article class="metric">
+                <span>Culture Follow-Ups</span>
+                <strong id="cultureOutstanding">0</strong>
+                <small id="cultureDetail">0 overdue / 0 reportable</small>
+              </article>
+              <article class="metric">
+                <span>IC Rounds</span>
+                <strong id="roundProgress">0 / 9</strong>
+                <small id="roundDetail">Current month</small>
+              </article>
+              <article class="metric">
+                <span>Priority Items</span>
+                <strong id="priorityCount">0</strong>
+                <small>Open high/medium risk items</small>
+              </article>
+            </div>
+
+            <div class="dashboard-grid">
+              <section class="panel">
+                <div class="section-heading">
+                  <h2>Needs Attention</h2>
+                  <span>Follow-up queue</span>
+                </div>
+                <div id="attentionList" class="worklist"></div>
+              </section>
+
+              <section class="panel">
+                <div class="section-heading">
+                  <h2>Recent Audit Activity</h2>
+                  <span>Latest saved entries</span>
+                </div>
+                <div id="recentList" class="recent"></div>
+              </section>
+            </div>
+          </section>
+
+          <section id="handHygiene" class="content">
+            <form id="handHygieneForm" class="audit-form">
+              <div class="form-section">
+                <h2>Observation Details</h2>
+                <div class="form-grid">
+                  <label>Department<select name="department" data-options="departments" required></select></label>
+                  <label>Unit / Area<input name="unit" placeholder="Room, station, or care area"></label>
+                  <label>Shift<select name="shift" data-options="shifts"></select></label>
+                  <label>Employee Type<select name="employeeType" data-options="employeeTypes"></select></label>
+                  <label>Patient Care Area<select name="patientCareArea" data-options="patientAreas"></select></label>
+                  <label>Observer<input name="observer" autocomplete="name"></label>
+                </div>
+              </div>
+
+              <div class="form-section">
+                <h2>Audit Findings</h2>
+                <div class="form-grid">
+                  <label>WHO 5 Moment<select name="whoMoment" data-options="whoMoments"></select></label>
+                  <label>HH Performed<select name="hhPerformed" data-options="yesNo" required></select></label>
+                  <label>Method<select name="method" data-options="methods"></select></label>
+                  <label>Gloves Appropriate<select name="glovesAppropriate" data-options="yesNoNa"></select></label>
+                  <label>Isolation Room<select name="isolationRoom" data-options="yesNo"></select></label>
+                  <label>Risk Level<select name="riskLevel" data-options="riskLevels"></select></label>
+                  <label>Coaching Provided<select name="coachingProvided" data-options="yesNo"></select></label>
+                  <label class="full">Comments / Corrective Action<textarea name="comments"></textarea></label>
+                </div>
+              </div>
+
+              <div class="actions">
+                <button type="submit">Save HH Audit</button>
+                <span class="status"></span>
+              </div>
+            </form>
+          </section>
+
+          <section id="culture" class="content">
+            <form id="cultureForm" class="audit-form">
+              <div class="form-section">
+                <h2>Culture Information</h2>
+                <div class="form-grid">
+                  <label>Patient<input name="patient" required></label>
+                  <label>MRN<input name="mrn"></label>
+                  <label>Organism<input name="organism" required></label>
+                  <label>Source<input name="source" placeholder="Urine, wound, blood, sputum"></label>
+                  <label>Collection Date<input name="collectionDate" type="date"></label>
+                  <label>Report Date<input name="reportDate" type="date"></label>
+                  <label>Isolation Precautions<select name="isolationPrecautions" data-options="isolationPrecautions"></select></label>
+                  <label>Reportable Concern<select name="reportableConcern" data-options="yesNo"></select></label>
+                </div>
+              </div>
+
+              <div class="form-section">
+                <h2>Follow-Up Tracking</h2>
+                <div class="form-grid">
+                  <label>Provider Contacted<select name="providerContacted" data-options="yesNo"></select></label>
+                  <label>Patient Contacted<select name="patientContacted" data-options="yesNo"></select></label>
+                  <label>Stewardship Notified<select name="stewardshipNotified" data-options="yesNo"></select></label>
+                  <label>Follow-up Needed<select name="followUpNeeded" data-options="yesNo"></select></label>
+                  <label>Owner<input name="owner" placeholder="Responsible person"></label>
+                  <label>Due Date<input name="dueDate" type="date"></label>
+                  <label>Status<select name="status" data-options="cultureStatuses"></select></label>
+                  <label>Initials<input name="initials"></label>
+                  <label class="full">Notes<textarea name="notes"></textarea></label>
+                </div>
+              </div>
+
+              <div class="actions">
+                <button type="submit">Save Culture Review</button>
+                <span class="status"></span>
+              </div>
+            </form>
+          </section>
+
+          <section id="icRound" class="content">
+            <form id="icRoundForm" class="audit-form">
+              <div class="form-section">
+                <h2>Round Details</h2>
+                <div class="form-grid">
+                  <label>Month<select name="month" data-options="months" data-default="month" required></select></label>
+                  <label>Department<select name="department" data-options="departments" required></select></label>
+                  <label>Audit Area<select name="auditArea" data-options="auditAreas"></select></label>
+                  <label>Surveyor<input name="surveyor"></label>
+                  <label>Round Completed<select name="roundCompleted" data-options="yesNoNa"></select></label>
+                  <label>Risk Level<select name="riskLevel" data-options="riskLevels"></select></label>
+                </div>
+              </div>
+
+              <div class="form-section">
+                <h2>Checklist</h2>
+                <div class="form-grid">
+                  <label>Isolation Signage Correct<select name="isolationSignage" data-options="yesNoNa"></select></label>
+                  <label>PPE Available<select name="ppeAvailable" data-options="yesNoNa"></select></label>
+                  <label>Sharps Safety Compliant<select name="sharpsSafe" data-options="yesNoNa"></select></label>
+                  <label>HH Supplies Stocked<select name="handHygieneSupply" data-options="yesNoNa"></select></label>
+                  <label>Cleaning Log Current<select name="cleaningLogCurrent" data-options="yesNoNa"></select></label>
+                  <label>Findings?<select name="findings" data-options="yesNoNa"></select></label>
+                  <label>Follow-up Required<select name="followUpRequired" data-options="yesNoNa"></select></label>
+                  <label>Follow-up Completed<select name="followUpCompleted" data-options="yesNoNa"></select></label>
+                  <label>Due Date<input name="dueDate" type="date"></label>
+                  <label class="full">Notes / Corrective Action<textarea name="notes"></textarea></label>
+                </div>
+              </div>
+
+              <div class="actions">
+                <button type="submit">Save IC Round</button>
+                <span class="status"></span>
+              </div>
+            </form>
+          </section>
+
+          <section id="environmental" class="content">
+            <form id="environmentalForm" class="audit-form">
+              <div class="form-section">
+                <h2>Environmental Round</h2>
+                <div class="form-grid">
+                  <label>Quarter<select name="quarter" data-options="quarters" data-default="quarter" required></select></label>
+                  <label>Department<select name="department" data-options="departments" required></select></label>
+                  <label>Audit Area<select name="auditArea" data-options="auditAreas"></select></label>
+                  <label>Surveyor<input name="surveyor"></label>
+                  <label>Round Completed<select name="roundCompleted" data-options="yesNoNa"></select></label>
+                  <label>Risk Level<select name="riskLevel" data-options="riskLevels"></select></label>
+                </div>
+              </div>
+
+              <div class="form-section">
+                <h2>Environment Checklist</h2>
+                <div class="form-grid">
+                  <label>Clean Storage Organized<select name="cleanStorage" data-options="yesNoNa"></select></label>
+                  <label>Dirty Utility Compliant<select name="dirtyUtility" data-options="yesNoNa"></select></label>
+                  <label>No Expired Supplies<select name="expiredSupplies" data-options="yesNoNa"></select></label>
+                  <label>Equipment Clean<select name="equipmentClean" data-options="yesNoNa"></select></label>
+                  <label>Environment Safe<select name="environmentSafe" data-options="yesNoNa"></select></label>
+                  <label>Findings?<select name="findings" data-options="yesNoNa"></select></label>
+                  <label>Follow-up Required<select name="followUpRequired" data-options="yesNoNa"></select></label>
+                  <label>Follow-up Completed<select name="followUpCompleted" data-options="yesNoNa"></select></label>
+                  <label>Due Date<input name="dueDate" type="date"></label>
+                  <label class="full">Notes / Corrective Action<textarea name="notes"></textarea></label>
+                </div>
+              </div>
+
+              <div class="actions">
+                <button type="submit">Save Environmental Round</button>
+                <span class="status"></span>
+              </div>
+            </form>
+          </section>
+
+          <section id="reports" class="content">
+            <div class="panel report-panel">
+              <div class="section-heading">
+                <h2>Reports & Export</h2>
+                <span>Download audit records from this browser</span>
+              </div>
+              <div class="report-actions">
+                <button id="downloadReportButton" class="report-button" type="button">Download CSV</button>
+                <button id="clearDataButton" class="danger-button" type="button">Clear This Browser Data</button>
+              </div>
+              <div class="report-grid">
+                <div><strong>Included sections</strong><p>Hand Hygiene, Positive Cultures, IC Rounds, and Environmental Rounds.</p></div>
+                <div><strong>Storage</strong><p>Saved locally in this browser. It is not shared with other devices.</p></div>
+                <div><strong>Best use</strong><p>Fast GitHub-only testing or personal tracking before moving to a shared server.</p></div>
+              </div>
+            </div>
+          </section>
+        </main>
+      </div>
+    </section>
+
+    <script src="app.js"></script>
+  </body>
+</html>
